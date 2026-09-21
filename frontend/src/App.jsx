@@ -31,6 +31,13 @@ function App() {
 
 useEffect(() => {
     fetchWishes();
+    const interval = setInterval(() => {
+        fetchWishes();
+    }, 2000);
+
+    return () => {
+        clearInterval(interval);
+    };
 }, []);
 
   const handleSubmit = async (e) => {
