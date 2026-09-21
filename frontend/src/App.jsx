@@ -12,12 +12,46 @@ import img4 from "./assets/img4.webp";
 
 function App() {
 
+  const [isFormVisible, setisFormVisible] = useState(false);
+
+
+  const [name, setName] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [message, setMessage] = useState("");
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(name, designation, message,);
+
+    try {
+      const response = await axios.post(`${API}/addwish`, { name, designation, message, });
+      toast.success("Birthday wish!");
+      resetForm();
+
+    } catch (error) {
+      console.error("There was an error fetching application Details:", error);
+      toast.error("Please try again.");
+    }
+  };
+
+  const resetForm = () => {
+        setName("");
+        setDesignation("");
+        setMessage("");
+        setisFormVisible(false);
+    };
+
+
+
   return (
     <>
+      <Toaster />
+
       <section id="Header">
         <div className="navbar">
           <img src={logo} alt="AISECT" />
-          <button className="bluebtn">Send Wish</button>
+          <button className="bluebtn" onClick={() => setisFormVisible(true)} >Send Wish</button>
         </div>
       </section>
 
@@ -89,13 +123,13 @@ function App() {
           <h4>Congratulatory Board</h4>
           <h2>Departmental Wishes wall </h2>
           <div className="card">
-            
+
             <div className="item">
               <div className="text">
                 <p>"Wishing our revered Chancellor Shri Santosh Choubey Sir the happiest of birthdays! Your visionary guidance inspires our faculty and students to push technological boundaries with humanity."</p>
               </div>
               <div className="details">
-                
+
                 <span>Uday Ranjan<br /> <i>Dean, CS & IT</i></span>
                 <img src={img2} alt="" />
               </div>
@@ -104,7 +138,7 @@ function App() {
                 <p>"Wishing our revered Chancellor Shri Santosh Choubey Sir the happiest of birthdays! Your visionary guidance inspires our faculty and students to push technological boundaries with humanity."</p>
               </div>
               <div className="details">
-                
+
                 <span>Ravikant Kumar <br /> <i>Head of Department, CS & IT</i></span>
                 <img src={img2} alt="" />
               </div>
@@ -113,7 +147,7 @@ function App() {
                 <p>"Wishing our revered Chancellor Shri Santosh Choubey Sir the happiest of birthdays! Your visionary guidance inspires our faculty and students to push technological boundaries with humanity."</p>
               </div>
               <div className="details">
-                
+
                 <span>Vijay Lal<br /> <i>Assistant Professor, CS & IT</i></span>
                 <img src={img2} alt="" />
               </div>
@@ -141,12 +175,12 @@ function App() {
                 <p>"Wishing our revered Chancellor Shri Santosh Choubey Sir the happiest of birthdays! Your visionary guidance inspires our faculty and students to push technological boundaries with humanity."</p>
               </div>
               <div className="details">
-                
+
                 <span>Danish Raja Akhtar <br /> <i>Lab Instructor, CS & IT</i></span>
                 <img src={img2} alt="" />
               </div>
             </div>
-            
+
           </div>
 
         </div>
@@ -154,15 +188,38 @@ function App() {
 
       <section id="Footer">
         <div>
+{/* <img src={logo} alt="" /> */}
+          <h1>Department of CS & IT</h1>
           
-<h1>Department of CS & IT</h1>
-<img src={logo} alt="" />
-<p>Developed in celebration of the birthday of our Chancellor <br /> Hon'ble Shri Santosh Choubey Ji. <br />AISECT Group of Universities.</p>
-<p>Empowered with technology, literature, and educational equity.</p>
+          <p>Developed in celebration of the birthday of our Chancellor <br /> Hon'ble Shri Santosh Choubey Ji. <br />AISECT Group of Universities.</p>
+          <p>Empowered with technology, literature, and educational equity.</p>
 
         </div>
-        
+
       </section>
+
+
+      {isFormVisible && (
+      <div id="wishform">
+        <form onSubmit={handleSubmit}>
+          <div >
+            <strong>Celebrate Together</strong>
+            <span onClick={resetForm}>✖</span>
+          </div>
+          <h2>Send Your Birthday Wishes</h2>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your full name" required />
+          <input type="text" value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="Enter your Designation" required />
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Your Birthday Tribute Message" required rows="3" ></textarea>
+          <input type="submit" className="bluebtn" value="Submit Birthday Wish" />
+        </form>
+       
+
+      </div>
+       )}
+
+
+
+
     </>
   )
 }
