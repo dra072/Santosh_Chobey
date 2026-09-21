@@ -24,4 +24,14 @@ router.post("/addwish", async (req, res) => {
     }
 });
 
+router.get("/wishes", async (req, res) => {
+    try {
+        const wishes = await WishForm.find().sort({ createdAt: -1 });
+        res.status(200).json(wishes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error"});
+    }
+});
+
 module.exports = router;

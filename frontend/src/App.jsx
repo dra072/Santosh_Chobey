@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API from "./API";
 import { Toaster, toast } from "react-hot-toast";
@@ -11,18 +11,33 @@ import img4 from "./assets/img4.webp";
 
 
 function App() {
-
+  const [wishes, setWishes] = useState([]);
   const [isFormVisible, setisFormVisible] = useState(false);
-
 
   const [name, setName] = useState("");
   const [designation, setDesignation] = useState("");
   const [message, setMessage] = useState("");
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchWishes = async () => {
+    try {
+        const response = await axios.get(`${API}/wishes`);
+        setWishes(response.data);
+
+    } catch (error) {
+        console.error("Error fetching wishes:", error);
+    }
+};
+
+useEffect(() => {
+    fetchWishes();
+}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     console.log(name, designation, message,);
+    setIsSubmitting(true);
 
     try {
       const response = await axios.post(`${API}/addwish`, { name, designation, message, });
@@ -32,15 +47,17 @@ function App() {
     } catch (error) {
       console.error("There was an error fetching application Details:", error);
       toast.error("Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const resetForm = () => {
-        setName("");
-        setDesignation("");
-        setMessage("");
-        setisFormVisible(false);
-    };
+    setName("");
+    setDesignation("");
+    setMessage("");
+    setisFormVisible(false);
+  };
 
 
 
@@ -59,7 +76,9 @@ function App() {
         <h4>Dedicated with deep admiration by the Department of CS & IT</h4>
         <h1>Celebrating the Visionary <br /> <span>Hon. Shri Santosh Choubey Ji</span></h1>
         <p>"Pioneering Technocrat • Acclaimed Poet & Novelist • Architect of Grassroots Digital Literacy • Chancellor & Mentor to Millions"</p>
-        <img src={img2} alt="" />
+        <div>
+          <img src={img2} alt="" />
+        </div>
       </section>
 
       <section id="Impact">
@@ -188,37 +207,45 @@ function App() {
 
       <section id="Footer">
         <div>
-{/* <img src={logo} alt="" /> */}
+          {/* <img src={logo} alt="" /> */}
           <h1>Department of CS & IT</h1>
-          
           <p>Developed in celebration of the birthday of our Chancellor <br /> Hon'ble Shri Santosh Choubey Ji. <br />AISECT Group of Universities.</p>
           <p>Empowered with technology, literature, and educational equity.</p>
-
         </div>
-
       </section>
 
-
       {isFormVisible && (
-      <div id="wishform">
-        <form onSubmit={handleSubmit}>
-          <div >
-            <strong>Celebrate Together</strong>
-            <span onClick={resetForm}>✖</span>
+        <div id="wishform">
+          <form onSubmit={handleSubmit}>
+            <div >
+              <strong>Celebrate Together</strong>
+              <span onClick={resetForm}>✖</span>
+            </div>
+            <h2>Send Your Birthday Wishes</h2>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your full name" required />
+            <input type="text" value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="Enter your Designation" required />
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Your Birthday Tribute Message" required rows="3" ></textarea>
+            <input type="submit" className="bluebtn" value={isSubmitting ? "Submitting..." : "Submit Birthday Wish"} disabled={isSubmitting} />
+          </form>
+        </div>
+      )}
+
+      <div id="Live">
+        <details>
+          <summary>LIVE WISHES STREAM</summary>
+          <div className="livewishes">
+
+            {wishes.map((wish) => (
+            <div key={wish._id}>
+              <strong>{wish.name}</strong>
+            <span>{wish.designation}</span>
+            <i>{wish.message}</i>
+            <span>{new Date(wish.createdAt).toLocaleString("en-IN", {day: "2-digit",month: "short",year: "numeric",hour: "2-digit",minute: "2-digit",hour12: true})}</span>
+            </div>
+            ))}
           </div>
-          <h2>Send Your Birthday Wishes</h2>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter your full name" required />
-          <input type="text" value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="Enter your Designation" required />
-          <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Your Birthday Tribute Message" required rows="3" ></textarea>
-          <input type="submit" className="bluebtn" value="Submit Birthday Wish" />
-        </form>
-       
-
+        </details>
       </div>
-       )}
-
-
-
 
     </>
   )
